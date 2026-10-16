@@ -16,7 +16,7 @@ LLM Router using RL trained agent
 
 4. Run a model using `ollama run qwen3:1.7b`. This will run the 1.7B params qwen3 model.
 
-**Note**: Make sure the ollama server is running at all times.
+**Note**: Make sure the ollama server is running at all times. To list all ollama models use `ollama list`.
 
 
 # Benchmark base models
