@@ -12,8 +12,8 @@ resp = ollama.chat(
         {"role": "system", "content": "Answer with only the final number. No explanation."},
         {"role": "user", "content": "What is 9 + 10?"},
     ],
-    think=False,
-    options={"temperature": 0},
+    think=False,                    # Do NOT generate model's thinking mechanism
+    options={"temperature": 0},     # Takes the token generated that has the highest probability
 )
 
 print(resp["message"]["content"])
