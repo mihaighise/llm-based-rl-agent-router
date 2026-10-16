@@ -23,10 +23,8 @@ import pandas as pd
 from datasets import load_dataset
 from tqdm import tqdm
 
-# ---------------------------------------------------------------- config
-# Edit this list to match the models you pulled (check with `ollama list`).
-MODELS = ["llama3.2:1b", "llama3.2:3b", "llama3.1:8b"]
-# MODELS = ["qwen3:1.7b", "qwen3:4b", "qwen3:8b"]
+
+MODELS = ["qwen3:1.7b", "qwen3:4b", "qwen3:8b"]
 
 N_PER_TASK = 100          # 100 GSM8K + 100 MMLU = 200 questions per model
 SEED = 42
