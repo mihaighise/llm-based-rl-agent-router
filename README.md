@@ -26,4 +26,8 @@ Before creating the RL Agent to route between the downloaded models, I created a
   * `latency`  (how fast the model is)
   * `output tokens` (how costly the model is)
 
+The evaluation is done using 2 LLM evaluation data sets:
+> 1. GSM8K (Grade School Math 8K) -> benchmark dataset of 8.5K high-quality human-written grade-school math word problems designed to evaluate multi-step mathematical reasoning in large language models.
+> 2. MMLU (Massive Multitask Language Understanding) -> standard benchmark dataset used to evaluate the knowledge and reasoning capabilities of large language models.
+
 The benchmark can be seen in `results/benchmark.csv`
