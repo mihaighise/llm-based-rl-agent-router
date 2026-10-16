@@ -26,7 +26,7 @@ from tqdm import tqdm
 
 MODELS = ["qwen3:1.7b", "qwen3:4b", "qwen3:8b"]
 
-N_PER_TASK = 100          # 100 GSM8K + 100 MMLU = 200 questions per model
+N_PER_TASK = 30          # 100 GSM8K + 100 MMLU = 200 questions per model
 SEED = 42
 OUT_PATH = "results/benchmark.csv"
 
@@ -37,7 +37,7 @@ SYSTEM_PROMPTS = {
     ),
     "mmlu": "Answer the multiple-choice question with only the letter A, B, C, or D. No explanation.",
 }
-MAX_TOKENS = {"gsm8k": 512, "mmlu": 8}   # caps output length (and runaway latency)
+MAX_TOKENS = {"gsm8k": 1024, "mmlu": 512}   # caps output length (and runaway latency)
 
 
 # ---------------------------------------------------------------- data
