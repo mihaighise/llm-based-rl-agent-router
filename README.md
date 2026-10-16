@@ -3,7 +3,7 @@ LLM Router using RL trained agent
 
 # Setup
 
-### Ollama models installation
+## Ollama models installation
 1. Install Ollama using `brew install ollama` (for MacOS)
 
 2. Run Ollama server using `ollama serve`
@@ -19,7 +19,7 @@ LLM Router using RL trained agent
 **Note**: Make sure the ollama server is running at all times. To list all ollama models use `ollama list`.
 
 
-# Benchmark base models
+### Benchmark base models
 
 Before creating the RL Agent to route between the downloaded models, I created a benchmark script to evaluate each model based on:
   * `accuracy` (how good the model is)
@@ -31,3 +31,7 @@ The evaluation is done using 2 LLM evaluation data sets:
 > 2. MMLU (Massive Multitask Language Understanding) -> standard benchmark dataset used to evaluate the knowledge and reasoning capabilities of large language models.
 
 The benchmark can be seen in `results/benchmark.csv`
+
+## Jupyter notebook setup
+1. Install jupyter notebook & matplotlib: `pip install jupyter matplotlib`
+2. Open jupyter notebook: `jupyter notebook`
