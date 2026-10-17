@@ -35,3 +35,8 @@ The benchmark can be seen in `results/benchmark.csv`
 ## Jupyter notebook setup
 1. Install jupyter notebook & matplotlib: `pip install jupyter matplotlib`
 2. Open jupyter notebook: `jupyter notebook`
+
+## Install embedding 
+Use `pip install sentence-transformers`
+
+
