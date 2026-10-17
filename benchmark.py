@@ -24,7 +24,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 
-MODELS = ["qwen3:1.7b", "qwen3:4b", "qwen3:8b"]
+MODELS = ["qwen3:1.7b", "llama3.2:3b", "qwen3:4b", "qwen3:8b"]
 
 N_PER_TASK = 30          # 100 GSM8K + 100 MMLU = 200 questions per model
 SEED = 42
@@ -101,7 +101,7 @@ def ask(model: str, task: str, prompt: str) -> dict:
         "options": {"temperature": 0, "num_predict": MAX_TOKENS[task]},
     }
     if model.startswith("qwen3"):
-        kwargs["think"] = False          # disable Qwen3's reasoning mode
+        kwargs["think"] = False          # disable Qwen3's reasoning mode, Llama models don't have reasoning hyperparam
 
     start = time.perf_counter()
     resp = ollama.chat(**kwargs)
