@@ -28,7 +28,7 @@ from tqdm import tqdm
 
 MODELS = ["qwen3:1.7b", "llama3.2:3b", "qwen3:4b", "qwen3:8b"]
 
-N_PER_TASK = 30          # 30 GSM8K + 30 MMLU = 60 questions per model
+N_PER_TASK = 100          # 100 GSM8K + 100 MMLU = 200 questions per model
 SEED = 42
 OUT_PATH = "results/benchmark.csv"
 
