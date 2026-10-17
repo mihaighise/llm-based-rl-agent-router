@@ -1,0 +1,44 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache / build
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets (API keys for the LLMs you route to)
+.env
+.env.*
+!.env.example
+
+# ML artifacts: models, checkpoints, logs
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+checkpoints/
+runs/
+wandb/
+mlruns/
+logs/
+
+# Data
+data/
+*.parquet
+*.h5
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

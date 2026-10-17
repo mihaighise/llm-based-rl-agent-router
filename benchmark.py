@@ -10,6 +10,8 @@ Usage:
     python benchmark.py --quick    # 5 questions per task, to test the pipeline
 
 The script is resumable: if it stops, run it again and it skips rows already saved.
+NOTE: after changing prompts or generation settings, delete the old CSV first,
+otherwise previously saved rows are kept as-is.
 """
 
 import argparse
@@ -26,7 +28,7 @@ from tqdm import tqdm
 
 MODELS = ["qwen3:1.7b", "llama3.2:3b", "qwen3:4b", "qwen3:8b"]
 
-N_PER_TASK = 30          # 100 GSM8K + 100 MMLU = 200 questions per model
+N_PER_TASK = 30          # 30 GSM8K + 30 MMLU = 60 questions per model
 SEED = 42
 OUT_PATH = "results/benchmark.csv"
 
@@ -35,8 +37,15 @@ SYSTEM_PROMPTS = {
         "Solve the math problem. Think step by step but keep it brief. "
         "End your reply with a final line of the form 'Answer: <number>'."
     ),
-    "mmlu": "Answer the multiple-choice question with only the letter A, B, C, or D. No explanation.",
+    "mmlu": (
+        "Answer the multiple-choice question. Think step by step but keep it brief. "
+        "End your reply with a final line of the form 'Answer: <letter>', "
+        "where <letter> is A, B, C or D."
+    ),
 }
+
+# Both tasks now reason before answering, so both need room for the reasoning.
+# If a reply hits this cap before writing its 'Answer:' line, it is graded as unparsed (wrong).
 MAX_TOKENS = {"gsm8k": 1024, "mmlu": 512}   # caps output length (and runaway latency)
 
 
@@ -64,21 +73,23 @@ def load_questions(n_per_task: int) -> list[dict]:
 
 
 # ---------------------------------------------------------------- grading
-NUM_RE = re.compile(r"-?\d+(?:\.\d+)?")
+# Both parsers read ONLY the "Answer: ..." line and ignore everything else in the reply.
+# They take the LAST match, so an "Answer:" mentioned mid-reasoning doesn't win over the final one.
+# Optional markdown bold is allowed, since models often write "**Answer:** 42" or "**Answer: C**".
+ANSWER_NUM_RE = re.compile(r"(?i:answer)\s*:\s*\**\s*(-?\d+(?:\.\d+)?)")
+# The keyword is case-insensitive, the letter must be uppercase A-D.
+ANSWER_LETTER_RE = re.compile(r"(?i:answer)\s*:\s*\**\s*\(?([ABCD])\b")
 
 
 def extract_number(text: str) -> str | None:
     text = text.replace(",", "").replace("$", "")
-    m = re.search(r"Answer:\s*(-?\d+(?:\.\d+)?)", text, re.IGNORECASE)
-    if m:
-        return m.group(1)
-    nums = NUM_RE.findall(text)          # fallback: last number in the reply
-    return nums[-1] if nums else None
+    matches = ANSWER_NUM_RE.findall(text)
+    return matches[-1] if matches else None
 
 
 def extract_letter(text: str) -> str | None:
-    m = re.search(r"\b([ABCD])\b", text.strip().upper())
-    return m.group(1) if m else None
+    matches = ANSWER_LETTER_RE.findall(text)
+    return matches[-1] if matches else None
 
 
 def grade(task: str, output: str, gold: str) -> tuple[str | None, bool]:
@@ -88,8 +99,10 @@ def grade(task: str, output: str, gold: str) -> tuple[str | None, bool]:
             return ans, ans is not None and abs(float(ans) - float(gold)) < 1e-6
         except ValueError:
             return ans, False
-    ans = extract_letter(output)
-    return ans, ans == gold
+    if task == "mmlu":
+        ans = extract_letter(output)
+        return ans, ans == gold
+    raise ValueError(f"Unknown task: {task!r}")
 
 
 # ---------------------------------------------------------------- model calls
@@ -101,7 +114,9 @@ def ask(model: str, task: str, prompt: str) -> dict:
         "options": {"temperature": 0, "num_predict": MAX_TOKENS[task]},
     }
     if model.startswith("qwen3"):
-        kwargs["think"] = False          # disable Qwen3's reasoning mode, Llama models don't have reasoning hyperparam
+        # Keep Qwen3's hidden thinking mode off: the reasoning we want is the brief,
+        # visible step-by-step text requested in the system prompt.
+        kwargs["think"] = False
 
     start = time.perf_counter()
     resp = ollama.chat(**kwargs)
@@ -165,6 +180,7 @@ def main() -> None:
     df = pd.read_csv(out_path)
     summary = df.groupby(["model", "task"]).agg(
         accuracy=("correct", "mean"),
+        parse_fail=("answer", lambda s: s.isna().mean()),   # share of replies with no 'Answer:' line
         avg_latency_s=("latency_s", "mean"),
         avg_output_tokens=("output_tokens", "mean"),
         n=("correct", "size"),
