@@ -8,11 +8,11 @@ LLM Router using RL trained agent
 
 2. Run Ollama server using `ollama serve`
 
-3. Download the three models used in this project:
+3. Download the four models used in this project:
    * Qwen3:1.7b : `ollama pull qwen3:1.7b`  -> 1.7B params | 1.5GB
    * Qwen3:4b : `ollama pull qwen3:4b`      -> 4B params | 2.5GB
    * Qwen3:8b : `ollama pull qwen3:8b`      -> 8B params | 4.5GB
-  
+   * Llama3.2:3b : `ollama pull llama3.2:3b` -> 3B params | 2GB
 
 4. Run a model using `ollama run qwen3:1.7b`. This will run the 1.7B params qwen3 model.
 
